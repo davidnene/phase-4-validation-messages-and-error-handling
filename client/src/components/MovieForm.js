@@ -15,21 +15,23 @@ function MovieForm() {
   });
   const [errors, setErrors] = useState([]);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    fetch("/movies", {
+    // fetch returns a Promise, we must await it
+    const response = await fetch("/movies", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(formData),
-    }).then((response) => {
-      if (response.ok) {
-        response.json().then((newMovie) => console.log(newMovie));
-      } else {
-        response.json().then((errorData) => setErrors(errorData.errors));
-      }
-    })
+    });
+    // response.json() returns a Promise, we must await it
+    const data = await response.json();
+    if (response.ok) {
+      console.log("Movie created:", data);
+    } else {
+      setErrors(data.errors);
+    }
   }
 
   function handleChange(e) {
